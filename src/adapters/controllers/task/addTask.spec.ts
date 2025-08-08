@@ -38,16 +38,21 @@ describe("AddTask Controller", () => {
       },
     };
 
+    const addTaskStub = new AddTaskStub();
+
     const addTaskController = new AddTaskController(
-      new AddTaskStub(),
+      addTaskStub,
       new ValidateStub(),
     );
 
+    const addSpy = jest.spyOn(addTaskStub, "add");
+
     const httpResponse = await addTaskController.handle(httpRequest);
 
-    expect(httpResponse.statusCode).toBe(201);
-    expect(httpResponse.body.title).toBe("any_title");
-    expect(httpResponse.body.description).toBe("any_description");
-    expect(httpResponse.body.date).toBe("30/06/2024");
+    expect(addSpy).toHaveBeenCalledWith({
+      title: "any_title",
+      description: "any_description",
+      date: "30/06/2024",
+    });
   });
 });
