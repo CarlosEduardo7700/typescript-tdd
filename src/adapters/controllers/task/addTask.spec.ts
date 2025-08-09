@@ -9,45 +9,66 @@ import { AddTask, AddTaskModel } from "../../../usecases";
 import { addTaskValidationCompositeFactory } from "../../factories";
 import env from "../../presentations/api/config/env";
 import { AddTaskController } from "./addTask";
-import { Validation } from "../../interfaces";
+import { HttpRequest, Validation } from "../../interfaces";
 
-class AddTaskStub implements AddTask {
-  async add(task: AddTaskModel): Promise<Task> {
-    return Promise.resolve({
-      id: "any_id",
-      title: "any_title",
-      description: "any_description",
-      date: "30/06/2024",
-    });
-  }
-}
-
-class ValidateStub implements Validation {
-  validate(data: any): Error | void {
-    return;
-  }
-}
-
-describe("AddTask Controller", () => {
-  test("Deve chamar AddTask com valores corretos", async () => {
-    const httpRequest = {
-      body: {
+const makeAddTask = (): AddTask => {
+  class AddTaskStub implements AddTask {
+    async add(task: AddTaskModel): Promise<Task> {
+      return Promise.resolve({
+        id: "any_id",
         title: "any_title",
         description: "any_description",
         date: "30/06/2024",
-      },
-    };
+      });
+    }
+  }
+  return new AddTaskStub();
+};
 
-    const addTaskStub = new AddTaskStub();
+const makeValidation = (): Validation => {
+  class ValidateStub implements Validation {
+    validate(data: any): Error | void {
+      return;
+    }
+  }
+  return new ValidateStub();
+};
 
-    const addTaskController = new AddTaskController(
-      addTaskStub,
-      new ValidateStub(),
-    );
+interface SutTypes {
+  addTaskStub: AddTask;
+  validationStub: Validation;
+  sut: AddTaskController;
+}
+
+const makeSUT = (): SutTypes => {
+  const addTaskStub = makeAddTask();
+  const validationStub = makeValidation();
+  const sut = new AddTaskController(addTaskStub, validationStub);
+
+  return {
+    addTaskStub,
+    validationStub,
+    sut,
+  };
+};
+
+const makeFakeRequest = (): HttpRequest => {
+  return {
+    body: {
+      title: "any_title",
+      description: "any_description",
+      date: "30/06/2024",
+    }
+  };
+};
+
+describe("AddTask Controller", () => {
+  test("Deve chamar AddTask com valores corretos", async () => {
+    const {sut, addTaskStub,} = makeSUT();
 
     const addSpy = jest.spyOn(addTaskStub, "add");
 
-    const httpResponse = await addTaskController.handle(httpRequest);
+    await sut.handle(makeFakeRequest());
 
     expect(addSpy).toHaveBeenCalledWith({
       title: "any_title",
