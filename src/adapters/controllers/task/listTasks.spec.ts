@@ -1,6 +1,6 @@
 import { Task } from "../../../entities/task";
 import { ListTasks } from "../../../usecases/listTasks";
-import { noContent, ok } from "../../presentations/api/httpResponses/httpResponses";
+import { noContent, ok, serverError } from "../../presentations/api/httpResponses/httpResponses";
 import { ListTasksController } from "./listTasks";
 
 interface SutTypes {
@@ -63,5 +63,12 @@ describe("ListTasks Controller", () => {
     const listSpy = jest.spyOn(listTasksStub, "list");
     await sut.handle({});
     expect(listSpy).toHaveBeenCalled();
+  });
+
+  test("Deve retornar 500 se acontecer algum erro", async () => {
+    const { sut, listTasksStub } = makeSut();
+    jest.spyOn(listTasksStub, "list").mockReturnValueOnce(Promise.reject(new Error()));
+    const httpResponse = await sut.handle({});
+    expect(httpResponse).toEqual(serverError(new Error()));
   });
 });
