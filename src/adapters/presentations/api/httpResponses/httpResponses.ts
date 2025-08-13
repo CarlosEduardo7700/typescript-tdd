@@ -12,10 +12,16 @@ export const serverError = (error: Error): HttpResponse => ({
   body: new ServerError(error.stack as string),
 });
 
+export const ok = (data: any): HttpResponse => ({
+  statusCode: 200,
+  body: data,
+});
+
 export const created = (data: any): HttpResponse => ({
   statusCode: 201,
   body: data,
 });
+
 export const noContent = (): HttpResponse => ({
   statusCode: 204,
 });
