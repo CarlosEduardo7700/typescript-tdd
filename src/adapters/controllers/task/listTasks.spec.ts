@@ -45,16 +45,23 @@ const makeFakeListTasks = (): Task[] => {
 };
 
 describe("ListTasks Controller", () => {
-  test("Retornar 204 se a lista estiver vazia", async () => {
+  test("Deve retornar 204 se a lista estiver vazia", async () => {
     const { sut, listTasksStub } = makeSut();
     jest.spyOn(listTasksStub, "list").mockReturnValueOnce(Promise.resolve([]));
     const httpResponse = await sut.handle({});
     expect(httpResponse).toEqual(noContent());
   });
 
-  test("Retornar 200 com uma lista de tarefa", async () => {
+  test("Deve retornar 200 com uma lista de tarefa", async () => {
     const { sut } = makeSut();
     const httpResponse = await sut.handle({});
     expect(httpResponse).toEqual(ok(makeFakeListTasks()));
+  });
+  
+  test("Deve verificar se a funcionalidade que lista tarefas é chamada corretamente", async () => {
+    const { sut, listTasksStub } = makeSut();
+    const listSpy = jest.spyOn(listTasksStub, "list");
+    await sut.handle({});
+    expect(listSpy).toHaveBeenCalled();
   });
 });
