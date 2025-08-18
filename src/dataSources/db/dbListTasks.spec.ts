@@ -50,4 +50,10 @@ describe("DbListTasks", () => {
     await sut.list();
     expect(listSpy).toHaveBeenCalled();
   });
+
+  test("Deve retornar tarefas em caso de sucesso", async () => {
+    const { sut } = makeSut();
+    const tasks = await sut.list();
+    expect(tasks).toEqual(makeFakeListTasks());
+  });
 });

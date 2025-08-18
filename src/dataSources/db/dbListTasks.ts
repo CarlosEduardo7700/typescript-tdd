@@ -4,7 +4,7 @@ import { ListTasksRepository } from "../../usecases/repository/listTasksReposito
 export class DbListTasks implements ListTasksRepository {
   constructor(private readonly listTaskRepository: ListTasksRepository){}  
   async list(): Promise<Task[]> {
-    await this.listTaskRepository.list();
-    return [];
+    const tasks = await this.listTaskRepository.list();
+    return tasks;
   }
 }
